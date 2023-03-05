@@ -28,4 +28,15 @@ services:
             - PORT:3001
             - CORS_PORT:3000
             - CORS_URL:frontend
+            - MONGO_PORT:27017
+            - MONGO_URL:mongo_db
 
+    mongo_db:
+        image: mongo:latest
+        volumes:
+            - mongodb:/data/db
+        ports:
+            - '27017:27017'
+
+volumes:
+    mongodb:
