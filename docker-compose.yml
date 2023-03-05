@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+    frontend:
+        build:
+            context: ./client
+        command: npm start
+        volumes:
+            - ./client/src:/usr/app/src
+        ports:
+            - '3000:3000'
+        tty: true
+        stdin_open: true
+        environment:
+            - API_PORT=3001
+            - API_URL=api
+    api:
+        build:
+            context: ./server
+        command: npm start
+        volumes:
+            - ./server/src:/usr/app/src
+        ports:
+            - '3001:3001'
+        environment:
+            - PORT=3001
+            - CORS_PORT=3000
+            - CORS_URL=fronted
+

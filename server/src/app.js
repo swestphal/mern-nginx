@@ -1,10 +1,12 @@
 import express from 'express'
 import cors from 'cors'
-const PORT = 3001
+const PORT = process.env.PORT || 3001
+const CORS_PORT = process.env.CORS_PORT || 3000
+const CORS_URL = process.env.CORS_URL || 'localhost'
 const app = express()
 
 const corsOption = {
-    origin: 'http://localhost:3000'
+    origin: `http://${CORS_URL}:${CORS_PORT}`
 }
 app.use(cors(corsOption))
 
