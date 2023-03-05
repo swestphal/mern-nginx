@@ -1,20 +1,12 @@
 import express from 'express'
 import cors from 'cors'
-import mongoose from 'mongoose'
 
+import { MongoClient } from 'mongodb'
 const MONGO_PORT = process.env.MONGO_PORT || 27017
-const MONGO_URL = process.env.MONGO_URL || 'localhost'
+const MONGO_URL = process.env.MONGO_URL || '127.0.0.1'
+
 const MONGODB = `mongodb://${MONGO_URL}:${MONGO_PORT}`
 
-mongoose.connect(MONGODB).then(() => {
-    server.listen(port)
-    server.on('error', onError)
-    server.on('listening', onListening)
-    console.log(`mongodb connected ${MONGODB_URL}`)
-}).catch(err => {
-    console.log(err)
-    process.exit(1)
-})
 
 const PORT = process.env.PORT || 3001
 const CORS_PORT = process.env.CORS_PORT || 3000
@@ -22,13 +14,46 @@ const CORS_URL = process.env.CORS_URL || 'localhost'
 
 const app = express()
 
-const corsOption = {
-    origin: `http://${CORS_URL}:${CORS_PORT}`
+//const url = `mongodb://mongodb:${MONGO_PORT}`
+const client = new MongoClient(MONGODB)
+
+async function connectToMongo() {
+    client.connect()
 }
-app.use(cors(corsOption))
+
+connectToMongo()
+
+async function runMongo(){
+    let isConnected = false
+    try {
+        await client.connect()
+        await client.db("admin").command( {ping:1} )
+        isConnected=true
+        console.log('connected to mongo')
+    } catch (err) {
+        console.log(err)
+    } finally {
+
+        return isConnected
+    }
+}
+
+//const corsOption = {
+//    origin: `http://${CORS_URL}:${CORS_PORT}`
+//}
+app.use(cors())
+
+
 
 app.get('/test', (req, res) => {
     res.send("Hello from express")
+})
+
+app.get('/healthcheck', async (req, res) => {
+
+    const result = await runMongo()
+    console.log(result)
+    return res.status(201).json({response: result})
 })
 
 app.listen(PORT,() => {
