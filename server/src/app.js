@@ -3,6 +3,7 @@ import cors from 'cors'
 const PORT = process.env.PORT || 3001
 const CORS_PORT = process.env.CORS_PORT || 3000
 const CORS_URL = process.env.CORS_URL || 'localhost'
+console.log(PORT, CORS_PORT, CORS_URL)
 const app = express()
 
 const corsOption = {
